@@ -12,7 +12,6 @@ DEFAULT_GUIDANCE_SCALE = 3.5
 DEFAULT_TEMPERATURE = 1.0
 DEFAULT_BPM = 120
 OUTPUT_DIR = "generated_batch"
-# =====================================================================================
 
 def clear_console():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -123,9 +122,9 @@ def show_settings():
             print("\nInput interrupted. Returning to main menu...")
             break
 
-# --- Main Script ---
+# main
 if __name__ == "__main__":
-    # --- Model Loading (Done once at the start) ---
+    # load model
     print(f"--- Quadracollision AutoSample v0.2 (08/31/25) ---")
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
     torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
@@ -133,7 +132,7 @@ if __name__ == "__main__":
 
     try:
         print("Loading MusicGen model (this may take a moment)...")
-        # Set cache directory to local folder
+        # set cache to same folder
         cache_dir = os.path.join(os.path.dirname(__file__), "model_cache")
         
         processor = AutoProcessor.from_pretrained("facebook/musicgen-small", cache_dir=cache_dir)
@@ -143,7 +142,7 @@ if __name__ == "__main__":
         print(f"ERROR: Error loading model: {e}")
         exit()
 
-    # --- Main Menu Loop ---
+    # main loop
     while True:
         try:
             clear_console()
@@ -156,7 +155,6 @@ if __name__ == "__main__":
             print("  [3] Settings")
             print("  [0] Quit")
 
-            # --- Get User Mode Selection ---
             while True:
                 try:
                     selection = input("\nSelect an option (0-3): ")
@@ -165,13 +163,13 @@ if __name__ == "__main__":
                         print("\nExiting. Goodbye!")
                         exit()
                     elif selected_index == 1:
-                        break  # Continue to generation setup
+                        break  
                     elif selected_index == 2:
                         show_faq()
-                        break  # Return to main menu after FAQ
+                        break 
                     elif selected_index == 3:
                         show_settings()
-                        break  # Return to main menu after settings
+                        break  
                     else:
                         print("Invalid number. Please try again.")
                 except ValueError:
@@ -180,16 +178,16 @@ if __name__ == "__main__":
                     print("\nInput interrupted. Exiting...")
                     exit()
             
-            if selected_index in [2, 3]:  # FAQ or Settings was selected, continue to next iteration
+            if selected_index in [2, 3]:  
                 continue
             
-            # --- Set Generation Parameters ---
+            # generation parameters
             clear_console()
             print("\n" + "="*50)
             print("--- GENERATION SETUP ---")
             print("="*50)
             
-            # Get prompts (allow multiple)
+            # multi-prompt
             prompts = []
             print("\nEnter your prompts (press Enter on empty line to finish):")
             while True:
@@ -205,11 +203,11 @@ if __name__ == "__main__":
                     print("\nInput interrupted. Returning to main menu...")
                     raise KeyboardInterrupt()
             
-            # Combine all prompts
+            # join
             manual_prompt = ", ".join(prompts)
             print(f"\nCombined prompt: {manual_prompt}")
             
-            # Get BPM
+            # get bpm
             while True:
                 try:
                     bpm_input = input(f"\nEnter BPM (default {DEFAULT_BPM}): ").strip()
@@ -227,7 +225,7 @@ if __name__ == "__main__":
                     print("\nInput interrupted. Returning to main menu...")
                     raise KeyboardInterrupt()
             
-            # Get Temperature
+            # get temp
             while True:
                 try:
                     temp_input = input(f"\nEnter Temperature (default {DEFAULT_TEMPERATURE}): ").strip()
@@ -245,7 +243,7 @@ if __name__ == "__main__":
                     print("\nInput interrupted. Returning to main menu...")
                     raise KeyboardInterrupt()
             
-            # Get Guidance Scale
+            # get guidance 
             while True:
                 try:
                     guidance_input = input(f"\nEnter Guidance Scale (default {DEFAULT_GUIDANCE_SCALE}): ").strip()
@@ -263,11 +261,11 @@ if __name__ == "__main__":
                     print("\nInput interrupted. Returning to main menu...")
                     raise KeyboardInterrupt()
             
-            # Create subfolder name
+            # create subfolder
             sanitized_prompt = "".join(c for c in manual_prompt if c.isalnum() or c in (' ','.','_')).rstrip().strip()
             subfolder_name = f"generated_{sanitized_prompt[:30]}"
 
-            # --- Get User Input for Duration ---
+            # get duration
             while True:
                 try:
                     duration_input = input("Enter audio duration in seconds (e.g., 10 or 0.5): ")
@@ -286,7 +284,7 @@ if __name__ == "__main__":
             if not os.path.exists(specific_output_dir):
                 os.makedirs(specific_output_dir)
 
-            # --- Generation Loop ---
+            # generation
             clear_console()
             print("\n" + "="*50)
             print("--- AUTOSAMPLING IN PROGRESS ---")
@@ -344,3 +342,4 @@ if __name__ == "__main__":
             print("Returning to main menu. Please wait...")
             time.sleep(2)
             continue
+
